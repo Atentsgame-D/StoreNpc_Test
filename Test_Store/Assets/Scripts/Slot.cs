@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class Slot : MonoBehaviour
 {
@@ -8,10 +9,16 @@ public class Slot : MonoBehaviour
     public ItemProperty item;
     public UnityEngine.UI.Image image;
     public UnityEngine.UI.Button sellBtn;
+    public Inventory inventory;
+
+    TextMeshProUGUI changeCoin;
+    Animator anim;
 
     private void Awake()
     {
         SetSellBtnInteractable(false);
+        changeCoin = GameObject.Find("Panel_MoneyChange").GetComponentInChildren<TextMeshProUGUI>();
+        anim = GameObject.Find("Panel_MoneyChange").GetComponent<Animator>();
     }
 
     void SetSellBtnInteractable(bool b)
@@ -44,6 +51,9 @@ public class Slot : MonoBehaviour
 
     public void OnClickSellBtn()
     {
+        inventory.Money += (int)((item.price) * 0.5f);
+        anim.SetTrigger("Sell");
+        changeCoin.text = "+" + ($"{(int)(item.price * 0.5f)}");
         SetItem(null);
     }
 }

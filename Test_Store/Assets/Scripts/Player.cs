@@ -3,14 +3,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using TMPro;
 
 public class Player : MonoBehaviour
 {
     PlayerInputActions actions = null;
     Animator anim = null;
-    TextMeshProUGUI useText = null;
+    GameObject useText;
     CharacterController controller;
+    public GameManager manager;
+    public GameObject scanObj;
 
     Vector3 inputDir = Vector3.zero;
     Quaternion targetRotation = Quaternion.identity;
@@ -35,12 +36,14 @@ public class Player : MonoBehaviour
         actions = new PlayerInputActions();
         anim = GetComponent<Animator>();
         controller = GetComponent<CharacterController>();
-        useText = GameObject.Find("UseText").GetComponent<TextMeshProUGUI>();
+        useText = GameObject.Find("UseText_GameObject");
     }
 
     private void Start()
     {
         useText.gameObject.SetActive(false);
+        manager.talkPanel.SetActive(false);
+        
     }
 
     private void OnEnable()
@@ -95,20 +98,25 @@ public class Player : MonoBehaviour
             {
                 tryUse = true;
             }
+            useText.gameObject.SetActive(!tryUse);
+        }
+        if(scanObj != null)
+        {
+            manager.Action(scanObj);
         }
     }
 
     private void OnTriggerEnter(Collider other)
     {
         isTrigger = true;
-        useText.gameObject.SetActive(true);
+        useText.SetActive(true);
     }
 
     private void OnTriggerExit(Collider other)
     {
         isTrigger = false;
         tryUse = false;
-        useText.gameObject.SetActive(false);
+        useText.SetActive(false);
     }
 
     private void OnMoveModeChange(InputAction.CallbackContext context)
@@ -120,6 +128,25 @@ public class Player : MonoBehaviour
         else
         {
             moveMode = MoveMode.Walk;
+        }
+    }
+
+    void ScanObject()
+    {
+        Ray ray = new(transform.position, transform.forward);
+        ray.origin += Vector3.up * 0.5f;
+        if (Physics.Raycast(ray, out RaycastHit hit, 1.0f, LayerMask.GetMask("Object")))
+        {
+            if (hit.collider != null)
+            {
+                scanObj = hit.collider.gameObject;
+            }
+            else
+                scanObj = null;
+        }
+        else
+        {
+            scanObj = null;
         }
     }
 
@@ -144,6 +171,11 @@ public class Player : MonoBehaviour
         else
         {
             anim.SetFloat("Speed", 0.0f);
+        }
+        ScanObject();
+        if(scanObj == null)
+        {
+            manager.talkPanel.SetActive(false);
         }
     }
 }
