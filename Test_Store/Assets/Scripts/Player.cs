@@ -12,6 +12,7 @@ public class Player : MonoBehaviour
     CharacterController controller;
     public GameManager manager;
     public GameObject scanObj;
+    public BoxCollider lineCol;
 
     Vector3 inputDir = Vector3.zero;
     Quaternion targetRotation = Quaternion.identity;
@@ -30,6 +31,7 @@ public class Player : MonoBehaviour
 
     public bool tryUse = false;
     public bool isTrigger = false;
+    public bool isTakeKey = false;
 
     private void Awake()
     {
@@ -108,15 +110,21 @@ public class Player : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        isTrigger = true;
-        useText.SetActive(true);
+        if (other.gameObject.CompareTag("Store"))
+        {
+            isTrigger = true;
+            useText.SetActive(true);
+        }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        isTrigger = false;
-        tryUse = false;
-        useText.SetActive(false);
+        if (other.gameObject.CompareTag("Store"))
+        {
+            isTrigger = false;
+            tryUse = false;
+            useText.SetActive(false);
+        }
     }
 
     private void OnMoveModeChange(InputAction.CallbackContext context)
@@ -142,11 +150,16 @@ public class Player : MonoBehaviour
                 scanObj = hit.collider.gameObject;
             }
             else
+            {
                 scanObj = null;
+                manager.talkindex = 0;
+            }
+                
         }
         else
         {
             scanObj = null;
+            manager.talkindex = 0;
         }
     }
 
@@ -176,6 +189,11 @@ public class Player : MonoBehaviour
         if(scanObj == null)
         {
             manager.talkPanel.SetActive(false);
+        }
+
+        if (isTakeKey)
+        {
+            lineCol.enabled = false;
         }
     }
 }

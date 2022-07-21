@@ -47,7 +47,7 @@ public class Store : MonoBehaviour
 
     public void OnClick(Slot slot)
     {
-        if(onSlotClick != null)
+        if (onSlotClick != null)
         {
             onSlotClick(slot.item);
         }

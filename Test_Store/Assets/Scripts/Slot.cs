@@ -1,15 +1,21 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 
 public class Slot : MonoBehaviour
 {
     [HideInInspector]
     public ItemProperty item;
-    public UnityEngine.UI.Image image;
-    public UnityEngine.UI.Button sellBtn;
+    public Image image;
+    public Button sellBtn;
     public Inventory inventory;
+    public Button yesBtn;
+    public GameObject sellCheck;
+    public TextMeshProUGUI checktext;
+    public Canvas canvas;
+
 
     TextMeshProUGUI changeCoin;
     Animator anim;
@@ -25,7 +31,6 @@ public class Slot : MonoBehaviour
     {
         if(sellBtn != null)
         {
-            //sellBtn.interactable = b;
             sellBtn.gameObject.SetActive(b);
         }
     }
@@ -49,8 +54,17 @@ public class Slot : MonoBehaviour
         }
     }
 
+    public void CheckSell()
+    {
+        sellCheck.SetActive(true);
+        sellCheck.transform.SetParent(canvas.transform);
+        checktext.text = ($"{item.name}을(를) {(int)(item.price * 0.5f)}코인에 \n판매 하시겠습니까?");
+    }
+
     public void OnClickSellBtn()
     {
+        sellCheck.transform.SetParent(transform);
+        sellCheck.SetActive(false);
         inventory.Money += (int)((item.price) * 0.5f);
         anim.SetTrigger("Sell");
         changeCoin.text = "+" + ($"{(int)(item.price * 0.5f)}");

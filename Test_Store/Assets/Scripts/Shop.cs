@@ -7,12 +7,12 @@ public class Shop : MonoBehaviour
     public Player player;
     public Store store;
     public Inventory inventory;
-    GameObject useText;
+    //GameObject useText;
 
-    private void Awake()
-    {
-        useText = GameObject.Find("UseText_GameObject");
-    }
+    //private void Awake()
+    //{
+    //    useText = GameObject.Find("UseText_GameObject");
+    //}
 
     private void OnTriggerStay(Collider other)
     {

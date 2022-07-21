@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 
 public class Inventory : MonoBehaviour
@@ -9,11 +10,14 @@ public class Inventory : MonoBehaviour
     public Store store;
     public int money;
     private List<Slot> slots;
+    public Button yesBtn;
+    public GameObject buyCheck;
+    public TextMeshProUGUI checktext;
+
 
     TextMeshProUGUI coin;
     TextMeshProUGUI changeCoin;
     Animator anim;
-
 
     public int Money 
     { 
@@ -31,7 +35,7 @@ public class Inventory : MonoBehaviour
         coin = GetComponentInChildren<TextMeshProUGUI>();
         changeCoin = GetComponentInChildren<FindAnim>().GetComponentInChildren<TextMeshProUGUI>();
         anim = GetComponentInChildren<FindAnim>().GetComponent<Animator>();
-        Money = 100000; 
+        Money = 100000;
     }
 
     void Start()
@@ -40,18 +44,20 @@ public class Inventory : MonoBehaviour
 
         int slotCnt = rootSlot.childCount;
 
-        for(int i=0; i < slotCnt; i++)
+        for (int i = 0; i < slotCnt; i++)
         {
             var slot = rootSlot.GetChild(i).GetComponent<Slot>();
 
             slots.Add(slot);
         }
         HideOn();
-        store.onSlotClick += BuyItem;
+        store.onSlotClick += CheckBuy;
     }
 
-    void BuyItem(ItemProperty item)
+    public void BuyItem(ItemProperty item)
     {
+        yesBtn.onClick.RemoveAllListeners();
+        buyCheck.SetActive(false);
         var emptySlot = slots.Find(t =>
         {
             return t.item == null || t.item.name == string.Empty;
@@ -69,6 +75,13 @@ public class Inventory : MonoBehaviour
         }
     }
 
+    public void CheckBuy(ItemProperty item)
+    {
+        buyCheck.SetActive(true);
+        checktext.text = ($"{item.name}을(를) {(int)(item.price)}코인에 \n구매 하시겠습니까?");
+        yesBtn.onClick.AddListener(() => BuyItem(item));
+    }
+
     public void HideOn()
     {
         gameObject.SetActive(false);
@@ -78,4 +91,5 @@ public class Inventory : MonoBehaviour
     {
         gameObject.SetActive(true);
     }
+
 }
